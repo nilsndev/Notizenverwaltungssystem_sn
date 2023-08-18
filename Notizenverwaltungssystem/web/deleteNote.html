@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Delete Note</title>
+    </head>
+    <body>
+        <h1>Notiz Löschen</h1>
+        <b>Geben sie die ID ein des Notizes</b>
+        <input type="text" id="noteID_tb">
+        <input type="button" value="Löschen" onclick="deleteClick()">
+        <br>
+        <a href="/index">Zurück zu Home</a>
+    </body>
+    <script>
+        function deleteClick() {
+            var noteID = document.getElementById("noteID_tb").value;
+            var url = `/api/note/${encodeURIComponent(noteID)}`;
+            if(noteID == ""){
+                alert("Die Textfelder dürfen nicht Leer sein");
+            }
+    
+            fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Notiz wurde gelöscht");
+                } else {
+                    alert("Notiz konnte nicht gelöscht werden");
+                }
+            })
+            .catch(error => {
+                alert("Notiz wurde nicht gelöscht " + error);
+            });
+        }
+    </script>
+</html>

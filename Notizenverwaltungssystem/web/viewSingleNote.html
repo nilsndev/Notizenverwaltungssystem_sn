@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>View Single Note</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>Notiz ansehen und bearbeiten</h1>
+        <div>ID:</div>
+        <br>
+        <input id="id_value" type="text" readonly value="@id">
+        <br>
+        <div>Title:</div>
+        <br>
+        <input id="title_value" type="text" value="@title">
+        <br>
+        <div>Note Text:</div>
+        <br>
+        <textarea id="note_text_value" type="text" rows="5" cols="40">@noteText</textarea>
+        <br>
+        <input type="button" value="save" onclick="saveChanges()">
+        <br>
+        <a href="/index">Zurück zu Home</a>
+    </body>
+    <script>
+        function saveChanges(){
+            var id_div = document.getElementById("id_value").value;
+            var title = document.getElementById("title_value").value;
+            var noteText = document.getElementById("note_text_value").innerHTML;
+            var data = {
+                    id: id_div, 
+                    userName: "",
+                    title: title,
+                    note_Text: noteText
+                };
+            fetch("api/note",{
+                method : "PUT",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+
+            })
+            .then(response =>{
+                if(response.ok){
+                    alert("Notiz wurde bearbeitet");
+                }
+                else{
+                    alert("Notiz konnte nicht bearbeitet werden ");
+                }
+            })
+            .catch(error =>{
+                alert("Es wurde ein Fehler abgefangen " + error);
+            });
+
+        }
+    </script>
+</html>

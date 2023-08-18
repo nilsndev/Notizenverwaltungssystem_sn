@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Notizen Ansehen</title>
+        <meta charset="UTF-8">
+        <style>
+            td{
+                padding: 20px;
+
+            }
+        </style>
+
+    </head>
+    <body>
+        <h1>Notizen Ansehen</h1>
+        <ul id="notesByUser"></ul>
+        <table id="notesByUserTable" border="1">
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+            </tr>
+
+        </table> 
+        <br>
+        <a href="/index">Zurück zu Home</a>
+    </body>
+    <script>
+        const listUL = document.getElementById("notesByUser");
+        const tableUL = document.getElementById("notesByUserTable");
+        fetch("api/note")
+        .then(response => response.json())
+        .then(data => {
+            const notes = data;
+                console.log("data:" + notes);
+                notes.forEach(note => {
+                    console.log("Note : " +note.id);
+                    var trObj = document.createElement("tr");
+                    var idObj = document.createElement("td");
+                    var titleObj = document.createElement("td");
+                    idObj.innerHTML = note.id;
+                    titleObj.innerHTML = note.title;
+                    tableUL.appendChild(trObj);
+                    trObj.appendChild(idObj);
+                    trObj.appendChild(titleObj);
+                    trObj.addEventListener('click', () => {
+                        window.location.href ="/viewSingleNote?id="+note.id+"&title=" + encodeURIComponent(note.title) + "&note_text=" + encodeURIComponent(note.note_text);
+                       
+                    });
+                })
+            })
+            .catch(error => {
+            console.error("Fehler beim Abrufen der Notizen:", error);
+        });
+    </script>
+    
+</html>
