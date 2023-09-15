@@ -17,12 +17,20 @@ namespace Notizenverwaltungssystem.Models{
             _title = title;
             _note_text = note_text;
         }
+        public Note(int id, string userName, string title, string note_text,int folderID){
+            _id = id;
+            _userName = userName;
+            _title = title;
+            _note_text = note_text;
+            _folderID = folderID;
+        }
         #endregion
         #region Fields
-         int _id;
+        int _id;
          string _note_text;
          string _userName;
          string _title;
+        int _folderID;
         #endregion
         #region Characteristics
         [JsonPropertyName("id")]

@@ -13,7 +13,6 @@
     </head>
     <body>
         <h1>Notizen Ansehen</h1>
-        <ul id="notesByUser"></ul>
         <table id="notesByUserTable" border="1">
             <tr>
                 <th>ID</th>
@@ -25,7 +24,6 @@
         <a href="/index">Zurück zu Home</a>
     </body>
     <script>
-        const listUL = document.getElementById("notesByUser");
         const tableUL = document.getElementById("notesByUserTable");
         fetch("api/note")
         .then(response => response.json())

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Folders</title>
+</head>
+<body>
+    <h1>View All Folders</h1>
+    <ul id="folder_ul"></ul>
+    
+</body>
+<script>
+    const folderUl = document.getElementById("folder_ul");
+    fetch("api/folder")
+    .then(response => response.json())
+    .then(data =>{
+        const folders = data;
+        console.log("data: " + folders[0].id);
+        folders.forEach(folder => {
+            var li = document.createElement("li");
+            li.innerHTML  = folder.id + " "+folder.folderName;
+            li.addEventListener('click', () => {
+                        window.location.href ="/viewSingleFolder?id="+folder.id+"&folderName=" + encodeURIComponent(folder.folderName);
+                    });
+            folderUl.appendChild(li); 
+        });
+    }).catch(error =>{
+        console.log("Es wurde ein Fehler abgefangen " + error);
+    });
+    
+    
+</script>
+
+</html>

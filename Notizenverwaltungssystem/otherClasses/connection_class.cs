@@ -89,6 +89,12 @@ namespace Notizenverwaltungssystem.otherClasses
             int rowsAffected = cmd.ExecuteNonQuery();
             return rowsAffected;
         }
+        public bool checkRowsAffected(int rowsAffected){
+            if (rowsAffected > 0){
+                return true;
+            }
+            return false;
+        }
         #endregion
     }
 }

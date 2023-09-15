@@ -20,6 +20,18 @@ namespace Notizenverwaltungssystem.Controllers{
             }
             return BadRequest();
         }
+        [HttpGet("GetNotesByFolderID")]
+        public IActionResult GetNotesByFolderID(int folderID){
+            try{
+                Note[] notes = NoteRepository.getNotesbyUserNameFolderID(folderID);
+                return Ok(notes);
+            }
+            catch (Exception ex){
+                Console.WriteLine(ex.Message);
+            }
+            return BadRequest();
+        }
+
         [HttpPost]
         public IActionResult Post(Note note){
             try{
