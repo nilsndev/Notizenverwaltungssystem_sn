@@ -64,7 +64,6 @@ namespace Notizenverwaltungssystem.otherClasses
                     results.Add(item);
                 }
             }
-
             return results.ToArray();
         }
         public T executeWithReturnValue<T>(string query){
@@ -73,12 +72,10 @@ namespace Notizenverwaltungssystem.otherClasses
             returnValue = (T)cmd.ExecuteScalar();
             return returnValue; 
         }
-
-
-
         public int executeQuery(string query){
             MySqlCommand cmd = new MySqlCommand(query,getConnection());
             int rowsAffected =cmd.ExecuteNonQuery();
+            cmd.Dispose();
             return rowsAffected;
         }
         public int executeQueryWithParams(string query,Hashtable hashTable){

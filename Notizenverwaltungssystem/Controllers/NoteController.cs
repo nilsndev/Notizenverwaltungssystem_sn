@@ -21,9 +21,9 @@ namespace Notizenverwaltungssystem.Controllers{
             return BadRequest();
         }
         [HttpGet("GetNotesByFolderID")]
-        public IActionResult GetNotesByFolderID(int folderID){
+        public IActionResult GetNotesByFolderID(int folId){
             try{
-                Note[] notes = NoteRepository.getNotesbyUserNameFolderID(folderID);
+                Note[] notes = NoteRepository.getNotesbyUserNameFolderID(folId);
                 return Ok(notes);
             }
             catch (Exception ex){

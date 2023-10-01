@@ -17,7 +17,7 @@ namespace Notizenverwaltungssystem.Models{
             _title = title;
             _note_text = note_text;
         }
-        public Note(int id, string userName, string title, string note_text,int folderID){
+        public Note(int id, string userName, string title, string note_text,int? folderID){
             _id = id;
             _userName = userName;
             _title = title;
@@ -30,7 +30,7 @@ namespace Notizenverwaltungssystem.Models{
          string _note_text;
          string _userName;
          string _title;
-        int _folderID;
+        int? _folderID;
         #endregion
         #region Characteristics
         [JsonPropertyName("id")]
@@ -69,6 +69,15 @@ namespace Notizenverwaltungssystem.Models{
             }
             set{
                 _title = value;
+            }
+        }
+        [JsonPropertyName("folderID")]
+        public int? FolderID{
+            get{
+                return _folderID;
+            }
+            set{
+                _folderID = value; 
             }
         }
         #endregion

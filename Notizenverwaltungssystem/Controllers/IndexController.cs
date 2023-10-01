@@ -9,14 +9,18 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpGet]
         public IActionResult Get(){
             string html = "";
+            string js = "";
             try{
             if(Settings.ActiveUserName == "" || Settings.ActiveUserName == null){
+              
                 html = System.IO.File.ReadAllText("web/login.html");
 
             }
             else{
-               html = System.IO.File.ReadAllText("web/index.html");
-            }
+                html = System.IO.File.ReadAllText("web/newHomePage.html");
+        
+
+                }
             }catch(Exception ex){
                 Console.WriteLine(ex.Message);
             }

@@ -9,13 +9,21 @@ namespace Notizenverwaltungssystem.Models{
             FolderName = folderName;
             UserName = userName;
         }
+        public Folder(int id, string folderName, string userName,int? parent_folder_ID){
+            _id = id;
+            FolderName = folderName;
+            UserName = userName;
+            _parent_folder_ID = parent_folder_ID;
+
+        }
+
 
         #endregion
         #region Fields
         int _id;
         string _folderName;
         string _userName;
-        Note[] _notes;
+        int? _parent_folder_ID;
         #endregion
         #region Characteristics
         [JsonPropertyName("id")]
@@ -24,7 +32,8 @@ namespace Notizenverwaltungssystem.Models{
         public string FolderName { get { return _folderName; } set { _folderName = value; } }
         [JsonPropertyName("userName")]
         public string UserName { get { return _userName; } set { _userName = value; } }
-        public Note[] Notes { get { return _notes; } set { _notes = value; } }
+        [JsonPropertyName("parentFolderId")]
+        public int? ParentFolderID { get { return _parent_folder_ID; } set {_parent_folder_ID = value; } }  
         #endregion
         #region Methods 
         #endregion

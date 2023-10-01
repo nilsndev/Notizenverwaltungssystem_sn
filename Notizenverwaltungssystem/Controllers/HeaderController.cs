@@ -1,21 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Notizenverwaltungssystem.otherClasses;
 
 namespace Notizenverwaltungssystem.Controllers{
     [Route("[controller]")]
     [ApiController]
-    public class ViewFoldersController : ControllerBase{
+    public class HeaderController : ControllerBase{
         [HttpGet]
         public IActionResult Get(){
             string html = "";
             try{
-                if (Settings.ActiveUserName == "" || Settings.ActiveUserName == null){
-                    html = System.IO.File.ReadAllText("web/login.html");
-                }
-                else{
-                    html = System.IO.File.ReadAllText("web/viewFolders.html");
-                }
+
+                html = System.IO.File.ReadAllText("web/header.html");
             }
             catch (Exception ex){
                 Console.WriteLine(ex.Message);

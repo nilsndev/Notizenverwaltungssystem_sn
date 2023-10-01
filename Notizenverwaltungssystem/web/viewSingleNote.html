@@ -1,32 +1,77 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>View Single Note</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1>Notiz ansehen und bearbeiten</h1>
-        <div>ID:</div>
-        <br>
-        <input id="id_value" type="text" readonly value="@id">
-        <br>
-        <div>Title:</div>
-        <br>
-        <input id="title_value" type="text" value="@title">
-        <br>
-        <div>Note Text:</div>
-        <br>
-        <textarea id="note_text_value" type="text" rows="5" cols="40">@noteText</textarea>
-        <br>
-        <input type="button" value="save" onclick="saveChanges()">
-        <br>
-        <a href="/index">Zurück zu Home</a>
-    </body>
+
+<head>
+    <title>Notemanagementsystem</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div id="header"></div>
+    <br>
+    <div class="container mt-5">
+        <h1 class="display-4">View One Note</h1>
+        <input id="id_value" class="form-control" type="hidden" readonly value="@id">
+        
+        <input id="fold_id_value" class="form-control" type="hidden" readonly value="@foldID">
+        <div class="form-group">
+            <label for="title_value">Title:</label>
+            <input id="title_value" class="form-control" type="text" value="@title">
+        </div>
+        <div class="form-group">
+            <label for="note_text_value">Note Text:</label>
+            <textarea id="note_text_value" class="form-control" rows="5">@noteText</textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveChanges()">Save</button>
+        <a class="btn btn-secondary" href="/index">Zurück zu Home</a>
+    </div>
+    <br>
+    <div id="footer"></div>
+    <script src="/LoadHeadXFood"></script> 
     <script>
+        var folderName = "";
+        function backToFoldButton(){
+            var url
+            var foldID = document.getElementById("fold_id_value").value;
+            getFolderByID(foldID, function(folderName) {
+            if(folderName == null){
+                url = "/Index"
+            }  
+            else{
+                url = "/viewSingleFolder?id=" + encodeURIComponent(foldID) + "&folderName=" + encodeURIComponent(folderName);
+            }
+            window.location.href = url;
+    }  );
+}
+
+
+function getFolderByID(id, callback){
+    var url = "api/folder/GetFolderByID?id=" + encodeURIComponent(id);
+    
+    fetch(url)
+    .then(response => {
+        if (!response.ok) {
+            alert("Es gab einen Fehler");
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        var folderName = data.folderName;
+        console.log("Ordnername: " + folderName);
+        callback(folderName); 
+    })
+    .catch(error => {
+        console.error("Es gab einen Fehler: " + error);
+    });
+}
+
         function saveChanges(){
             var id_div = document.getElementById("id_value").value;
             var title = document.getElementById("title_value").value;
-            var noteText = document.getElementById("note_text_value").innerHTML;
+            var noteText = document.getElementById("note_text_value").value;
+            console.log("Notetex " +noteText);
             var data = {
                     id: id_div, 
                     userName: "",
@@ -43,6 +88,7 @@
             .then(response =>{
                 if(response.ok){
                     alert("Notiz wurde bearbeitet");
+                    backToFoldButton();
                 }
                 else{
                     alert("Notiz konnte nicht bearbeitet werden ");
@@ -53,5 +99,9 @@
             });
 
         }
+        
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

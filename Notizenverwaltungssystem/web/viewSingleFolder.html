@@ -1,47 +1,333 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>View Single Folder</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-        <h1>Ordner ansehen und bearbeiten</h1>
-        <div>ID:</div>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Notemanagementsystem</title>
+    <style>
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Hier können Sie die Transparenz einstellen */
+            z-index: 1000;
+        }
+
+        .modal-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001; 
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            max-width: 400px; 
+        }
+
+        .modal-content {
+            text-align: center;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    <br>
+    <div class="container mt-4">
+        <h1 id="folderName">@folderName</h1> 
+        
+    
+        <div style="display: none;"  id="folderID">@id</div>
+        <h1>Folders:</h1>
+        <ul id="childFolders" class="list-group"></ul>
         <br>
-        <input id="id_value" type="text" readonly value="@id">
         <br>
-        <div>FolderName:</div>
+        <input type="button" class="btn btn-success" value="Add Folder" onclick="openAddFolderForm()">
         <br>
-        <input id="folderName_value" type="text" value="@folderName">
+        <h1>Notes:</h1>
+        <ul id="folderItems" class="list-group">
+        </ul>
         <br>
-        <div>userName:</div>
         <br>
-        <input type="button" value="save" onclick="saveChanges()">
+        <input type="button" class="btn btn-success" value="Add Note" onclick="openAddForm()">
+        <a href="/index" class="btn btn-primary">Zurück</a>
         <br>
-        <a href="/index">Zurück zu Home</a>
-    </body>
-    <script>
-       function saveChanges(){
-            var id_div = document.getElementById("id_value").value;
-            var folderName_val = document.getElementById("folderName_value").value;
-            console.log(id_div);
-            console.log(folderName_val);
+        <div id="overlay"></div>
+        <div id="editForm" class="modal-container">
+            <span class="close" id="editClose" onclick="closeEditForm()">&times;</span>
+            <h2>Edit Folder</h2>
+            <input id="id_value" type="hidden" readonly value="@id">
+            <br>
+            <div>FolderName:</div>
+            <input id="folderName_value" type="text" value="@folderName">
+            <br>
+            <br>
+            <input type="button" value="save"  class="btn btn-primary" onclick="editITem()">
+            <br>
+        </div>
+        <div id="addForm" class="modal-container">
+            <span class="close" id="editClose" onclick="closeAddForm()">&times;</span>
+            <h2>Add Note</h2>
+            <div>Title:</div>
+            <input id="title_value" type="text">
+            <br>
+            <div>Text Content</div>
+            <br>
+            <textarea id="text_conTent" ></textarea>
+            <br>
+            <input type="button" class="btn btn-primary" value="Add" onclick="addNote()">
+            
+            <br>
+        </div>
+        <div id="addChildFolderForm" class="modal-container">
+            <span class="close" id="closeADDChildForm" onclick="closeAddFolderForm()">&times;</span>
+            <h2>Add Folder</h2>
+            <div>FolderName:</div>
+            <input id="folderName_add_value" type="text">
+            <br>
+            <br>
+            
+            <input type="button" class="btn btn-primary" value="Add" onclick="addFolder()">
+            
+            <br>
+        </div>
+    </div>
+    <br>
+    <div id="footer"></div>
+</body>
+<script src="/LoadHeadXFood"></script> 
+<script>
+    var contentIsLoaded = false;
+    document.addEventListener("DOMContentLoaded", async function () {
+    // Ihre JavaScript-Funktionen hier ausführen
+    await loadData();
+});
+    async function loadData(){
+        if(!contentIsLoaded){
+            contentIsLoaded =true;
+            await loadNotes();
+            await loadFolders();
+        }
+    }
+    async function loadFolders() {
+    var childFolders = document.getElementById("childFolders");
+    var folID = document.getElementById("folderID").innerHTML;
+    console.log(folID);
+    var url = `api/folder/GetChildFoldersByID?id=${encodeURIComponent(folID)}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Fetch-Anfrage war nicht erfolgreich");
+        }
+        const folders = await response.json();
+        console.log(folders);
+        folders.forEach(folder => {
+            var li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.addEventListener('click', () => {
+                window.location.href ="/viewSingleFolder?id="+folder.id+"&folderName=" + encodeURIComponent(folder.folderName);
+            });
+            var buttonGroup = document.createElement("div");
+            buttonGroup.className = "btn-group";
+            var folderInfo = document.createElement("div");
+            folderInfo.innerHTML = folder.folderName;
+            var deleteButton = document.createElement("button");
+            deleteButton.className = "btn btn-danger";
+            deleteButton.innerHTML = "Delete";
+            deleteButton.addEventListener('click', () => {
+                removeFolderItem(folder.id);
+            });
+            var editButton = document.createElement("button");
+            editButton.className = "btn btn-primary";
+            editButton.innerHTML = "Edit";
+            editButton.addEventListener('click', () => {
+                openEditForm(folder.id,folder.folderName);
+            });
+            buttonGroup.appendChild(editButton);
+            buttonGroup.appendChild(deleteButton);
+            li.appendChild(folderInfo);
+            li.appendChild(buttonGroup);
+            childFolders.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Es wurde ein Fehler abgefangen: ", error);
+    }
+}
+
+async function loadNotes() {
+    var folderItems = document.getElementById("folderItems");
+    var folID = document.getElementById("folderID").innerHTML;
+    var url = `api/note/GetNotesByFolderID?folId=${encodeURIComponent(folID)}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Fetch-Anfrage war nicht erfolgreich");
+        }
+        const notes = await response.json();
+        console.log(notes);
+        notes.forEach(note => {
+            var li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.addEventListener('click', () => {
+                window.location.href = "/viewSingleNote?id=" + note.id + "&title=" + encodeURIComponent(note.title) + "&note_text=" + encodeURIComponent(note.note_text) + "&foldID=" + encodeURIComponent(folID);
+            });
+            var noteInfo = document.createElement("div");
+            noteInfo.innerHTML = note.title;
+            var deleteButton = document.createElement("button");
+            deleteButton.className = "btn btn-danger";
+            deleteButton.innerHTML = "Delete";
+            deleteButton.addEventListener('click', () => {
+                removeNoteItem(note.id);
+            });
+            li.appendChild(noteInfo);
+            li.appendChild(deleteButton);
+            folderItems.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Es wurde ein Fehler abgefangen: ", error);
+    }
+}
+function removeFolderItem(id){
+    var url = `/api/folder/${encodeURIComponent(id)}`;
+            fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Ordner wurde gelöscht");
+                    location.reload();
+                } else {
+                    alert("Ordner konnte nicht gelöscht werden");
+                }
+            })
+            .catch(error => {
+                alert("Fehler wurde abgefangen " + error);
+            });
+}
+
+   
+    function removeNoteItem(id){
+            console.log(id);
+            var url = `/api/note/${encodeURIComponent(id)}`;
+            fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Note wurde gelöscht");
+                    location.reload();
+                } else {
+                    alert("Note konnte nicht gelöscht werden");
+                }
+            })
+            .catch(error => {
+                alert("Fehler wurde abgefangen " + error);
+            });
+        }
+    function addFolder(){
+        var name = document.getElementById("folderName_add_value").value;
+        var parfolID = document.getElementById("folderID").innerHTML;
+        //console.log()
+        var data = {
+            id : 0,
+            folderName: name,
+            userName : "",
+            parentFolderId : parfolID
+        }
+        fetch("api/folder",{
+            method: "POST",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body : JSON.stringify(data)
+            
+        }).then(response =>{
+            if(response.ok){
+                alert("Ordner wurde hinzugefügt!");
+                location.reload();
+            }
+            else{
+                alert("Ordner konnte nicht hinzugefügt werden")
+            }
+        })
+        .catch(error =>{
+                alert("Es wurde ein Fehler abgefangen " + error);
+        });
+    }
+    function addNote(){
+        var folID = document.getElementById("folderID").innerHTML;
+        var noteTitle = document.getElementById("title_value").value;
+        var noteText = document.getElementById("text_conTent").value;
+        console.log("ntxt "+noteText);
+        var data = {
+            id: 0,
+            title: noteTitle,
+            userName : "",
+            folderID : folID,
+            note_text: noteText
+        }
+        fetch("api/note",{
+            method: "POST",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body : JSON.stringify(data)
+            
+        }).then(response =>{
+            if(response.ok){
+                alert("Note wurde hinzugefügt!");
+                location.reload();
+            }
+            else{
+                alert("Note konnte nicht hinzugefügt werden")
+            }
+        })
+        .catch(error =>{
+                alert("Es wurde ein Fehler abgefangen " + error);
+            });
+    }
+    function editITem(){
+            var folID = document.getElementById("folderID").innerHTML;
+            var fol_name = document.getElementById("folderName_value").value;
+            var idVal = document.getElementById("id_value").value;
+            console.log(fol_name);
             var data = {
-                    id: id_div, 
-                    folderName: folderName_val,
-                    userName: "",
-                };
+            id : idVal,
+            folderName: fol_name,
+            userName : "",
+            parentFolderId : folID
+            }
             fetch("api/folder",{
                 method : "PUT",
                 headers : {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data)
-
             })
             .then(response =>{
                 if(response.ok){
                     alert("Ordner wurde bearbeitet");
+                    location.reload();
                 }
                 else{
                     alert("Ordner konnte nicht bearbeitet werden ");
@@ -50,7 +336,52 @@
             .catch(error =>{
                 alert("Es wurde ein Fehler abgefangen " + error);
             });
-
+    }
+    function openEditForm(id, folderName) {
+            event.stopPropagation();
+            var editForm = document.getElementById("editForm");
+            var overlay = document.getElementById("overlay");
+            var idVal = document.getElementById("id_value");
+            var fnameVal = document.getElementById("folderName_value");
+            idVal.value = id;
+            fnameVal.value = folderName;
+            editForm.style.display = "block";
+            overlay.style.display = "block";
         }
-    </script>
+    function openAddFolderForm(){
+        var addForm = document.getElementById("addChildFolderForm")
+        var overlay = document.getElementById("overlay");
+        var folderName = document.getElementById("folderName_add_value");
+        addForm.style.display = "block";
+        overlay.style.display = "block";
+
+    }
+    function closeEditForm(){
+        const form = document.getElementById("editForm");
+        const overlay = document.getElementById("overlay")
+        form.style.display = "none";
+        overlay.style.display = "none";
+    }
+    function openAddForm(){
+        var addForm = document.getElementById("addForm")
+        var overlay = document.getElementById("overlay");
+        var folderName = document.getElementById("folderName_add_value");
+        addForm.style.display = "block";
+        overlay.style.display = "block";
+
+    }
+    function closeAddFolderForm(){
+        const form = document.getElementById("addChildFolderForm");
+        const overlay = document.getElementById("overlay")
+        form.style.display = "none";
+        overlay.style.display = "none";
+    }
+    function closeAddForm(){
+        const form = document.getElementById("addForm");
+        const overlay = document.getElementById("overlay")
+        form.style.display = "none";
+        overlay.style.display = "none";
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </html>
