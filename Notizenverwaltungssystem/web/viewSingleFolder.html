@@ -52,19 +52,20 @@
         
     
         <div style="display: none;"  id="folderID">@id</div>
-        <h1>Folders:</h1>
+        <h4>Folders:</h4>
         <ul id="childFolders" class="list-group"></ul>
         <br>
         <br>
         <input type="button" class="btn btn-success" value="Add Folder" onclick="openAddFolderForm()">
         <br>
-        <h1>Notes:</h1>
+        <br>
+        <h4>Notes:</h4>
         <ul id="folderItems" class="list-group">
         </ul>
         <br>
         <br>
         <input type="button" class="btn btn-success" value="Add Note" onclick="openAddForm()">
-        <a href="/index" class="btn btn-primary">Zurück</a>
+        <a onclick="backToPrevious()" class="btn btn-primary">Zurück</a>
         <br>
         <div id="overlay"></div>
         <div id="editForm" class="modal-container">
@@ -381,6 +382,9 @@ function removeFolderItem(id){
         const overlay = document.getElementById("overlay")
         form.style.display = "none";
         overlay.style.display = "none";
+    }
+    function backToPrevious(){
+        window.history.back();
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

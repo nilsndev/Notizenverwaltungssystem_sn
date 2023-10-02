@@ -24,7 +24,7 @@
             <textarea id="note_text_value" class="form-control" rows="5">@noteText</textarea>
         </div>
         <button class="btn btn-primary" onclick="saveChanges()">Save</button>
-        <a class="btn btn-secondary" href="/index">Zurück zu Home</a>
+        <a class="btn btn-secondary"  onclick="backToFoldButton()">Zurück zu Home</a>
     </div>
     <br>
     <div id="footer"></div>
@@ -32,41 +32,8 @@
     <script>
         var folderName = "";
         function backToFoldButton(){
-            var url
-            var foldID = document.getElementById("fold_id_value").value;
-            getFolderByID(foldID, function(folderName) {
-            if(folderName == null){
-                url = "/Index"
-            }  
-            else{
-                url = "/viewSingleFolder?id=" + encodeURIComponent(foldID) + "&folderName=" + encodeURIComponent(folderName);
-            }
-            window.location.href = url;
-    }  );
-}
-
-
-function getFolderByID(id, callback){
-    var url = "api/folder/GetFolderByID?id=" + encodeURIComponent(id);
-    
-    fetch(url)
-    .then(response => {
-        if (!response.ok) {
-            alert("Es gab einen Fehler");
-            return;
+            window.history.back();
         }
-        return response.json();
-    })
-    .then(data => {
-        var folderName = data.folderName;
-        console.log("Ordnername: " + folderName);
-        callback(folderName); 
-    })
-    .catch(error => {
-        console.error("Es gab einen Fehler: " + error);
-    });
-}
-
         function saveChanges(){
             var id_div = document.getElementById("id_value").value;
             var title = document.getElementById("title_value").value;
