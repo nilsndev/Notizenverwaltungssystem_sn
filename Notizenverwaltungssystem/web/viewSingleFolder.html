@@ -131,14 +131,15 @@
     var url = `api/folder/GetChildFoldersByID?id=${encodeURIComponent(folID)}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) {
+       /* if (!response.ok) {
             throw new Error("Fetch-Anfrage war nicht erfolgreich");
-        }
+        }*/
         const folders = await response.json();
         console.log(folders);
         folders.forEach(folder => {
             var li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.style.cursor = "pointer";
             li.addEventListener('click', () => {
                 window.location.href ="/viewSingleFolder?id="+folder.id+"&folderName=" + encodeURIComponent(folder.folderName);
             });
@@ -165,7 +166,7 @@
             childFolders.appendChild(li);
         });
     } catch (error) {
-        console.error("Es wurde ein Fehler abgefangen: ", error);
+        //console.error("Es wurde ein Fehler abgefangen: ", error);
     }
 }
 
@@ -175,13 +176,14 @@ async function loadNotes() {
     var url = `api/note/GetNotesByFolderID?folId=${encodeURIComponent(folID)}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Fetch-Anfrage war nicht erfolgreich");
-        }
+        /*if (!response.ok) {
+            //throw new Error("Fetch-Anfrage war nicht erfolgreich");
+        }*/
         const notes = await response.json();
-        console.log(notes);
+        //console.log(notes);
         notes.forEach(note => {
             var li = document.createElement("li");
+            li.style.cursor = "pointer";
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.addEventListener('click', () => {
                 window.location.href = "/viewSingleNote?id=" + note.id + "&title=" + encodeURIComponent(note.title) + "&note_text=" + encodeURIComponent(note.note_text) + "&foldID=" + encodeURIComponent(folID);
@@ -199,7 +201,7 @@ async function loadNotes() {
             folderItems.appendChild(li);
         });
     } catch (error) {
-        console.error("Es wurde ein Fehler abgefangen: ", error);
+        //console.error("Es wurde ein Fehler abgefangen: ", error);
     }
 }
 function removeFolderItem(id){
@@ -212,20 +214,20 @@ function removeFolderItem(id){
             })
             .then(response => {
                 if (response.ok) {
-                    alert("Ordner wurde gelöscht");
+                    //alert("Ordner wurde gelöscht");
                     location.reload();
                 } else {
-                    alert("Ordner konnte nicht gelöscht werden");
+                    //alert("Ordner konnte nicht gelöscht werden");
                 }
             })
             .catch(error => {
-                alert("Fehler wurde abgefangen " + error);
+                //alert("Fehler wurde abgefangen " + error);
             });
 }
 
    
     function removeNoteItem(id){
-            console.log(id);
+            //console.log(id);
             var url = `/api/note/${encodeURIComponent(id)}`;
             fetch(url, {
                 method: "DELETE",
@@ -235,14 +237,14 @@ function removeFolderItem(id){
             })
             .then(response => {
                 if (response.ok) {
-                    alert("Note wurde gelöscht");
+                    //alert("Note wurde gelöscht");
                     location.reload();
                 } else {
-                    alert("Note konnte nicht gelöscht werden");
+                    //alert("Note konnte nicht gelöscht werden");
                 }
             })
             .catch(error => {
-                alert("Fehler wurde abgefangen " + error);
+                //alert("Fehler wurde abgefangen " + error);
             });
         }
     function addFolder(){
@@ -264,22 +266,21 @@ function removeFolderItem(id){
             
         }).then(response =>{
             if(response.ok){
-                alert("Ordner wurde hinzugefügt!");
+                //alert("Ordner wurde hinzugefügt!");
                 location.reload();
             }
             else{
-                alert("Ordner konnte nicht hinzugefügt werden")
+                //alert("Ordner konnte nicht hinzugefügt werden")
             }
         })
         .catch(error =>{
-                alert("Es wurde ein Fehler abgefangen " + error);
+                //alert("Es wurde ein Fehler abgefangen " + error);
         });
     }
     function addNote(){
         var folID = document.getElementById("folderID").innerHTML;
         var noteTitle = document.getElementById("title_value").value;
         var noteText = document.getElementById("text_conTent").value;
-        console.log("ntxt "+noteText);
         var data = {
             id: 0,
             title: noteTitle,
@@ -296,22 +297,21 @@ function removeFolderItem(id){
             
         }).then(response =>{
             if(response.ok){
-                alert("Note wurde hinzugefügt!");
+                //alert("Note wurde hinzugefügt!");
                 location.reload();
             }
             else{
-                alert("Note konnte nicht hinzugefügt werden")
+                //alert("Note konnte nicht hinzugefügt werden")
             }
         })
         .catch(error =>{
-                alert("Es wurde ein Fehler abgefangen " + error);
+                //alert("Es wurde ein Fehler abgefangen " + error);
             });
     }
     function editITem(){
             var folID = document.getElementById("folderID").innerHTML;
             var fol_name = document.getElementById("folderName_value").value;
             var idVal = document.getElementById("id_value").value;
-            console.log(fol_name);
             var data = {
             id : idVal,
             folderName: fol_name,
@@ -327,15 +327,15 @@ function removeFolderItem(id){
             })
             .then(response =>{
                 if(response.ok){
-                    alert("Ordner wurde bearbeitet");
+                    //alert("Ordner wurde bearbeitet");
                     location.reload();
                 }
                 else{
-                    alert("Ordner konnte nicht bearbeitet werden ");
+                    //alert("Ordner konnte nicht bearbeitet werden ");
                 }
             })
             .catch(error =>{
-                alert("Es wurde ein Fehler abgefangen " + error);
+                //alert("Es wurde ein Fehler abgefangen " + error);
             });
     }
     function openEditForm(id, folderName) {

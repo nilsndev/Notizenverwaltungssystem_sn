@@ -1,84 +1,169 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Login / Registrieren</title>
-        <meta charset="UTF-8">
-       
-    </head>
-    <body>
-        <h1>Login / Registrieren</h1>
-        <b>Geben sie ihren Benutzernamen ein</b>
+<head>
+    <title>Notemanagementsystem</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"], input[type="password"] {
+            text-align: left;
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        input[type="button"] {
+            text-align: center;
+            margin-top: 20px;
+            margin-left: 10px;
+            background-color: darkblue;
+            color: #fff;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            
+        }
+
+        input[type="button"]:hover {
+            background-color: #555;
+        }
+
+        b {
+            color: #333;
+        }
+        .error-message {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login / Registrieren</h1>
+    <div class="container">
+        <b>Benutzername:</b>
         <br>
-        <input id="userName"  type="text" required>
+        <input id="userName" type="text" required>
+        <span class="error-message" id="userNameError">Benutzername darf nicht leer sein.</span>
         <br>
-        <b>Geben sie ihr Passwort ein</b>
+        <b>Passwort:</b>
         <br>
-        <input id="passWord" type="text" required>
+        <input id="passWord" type="password" required>
+        <span class="error-message" id="passWordError">Passwort darf nicht leer sein.</span>
+        <br>
         <br>
         <input type="button" id="login_button" value="Einloggen" onclick="login_click()">
-        <br>
+        
         <input type="button" id="reg_button" value="Registrieren" onclick="reg_click()">
-    </body>
-    <script>
-        var userName, passWord;
-        function login_click() {
-            var userName = document.getElementById("userName").value;
-            var passWord = document.getElementById("passWord").value;
-            var data ={
-                UserName: userName,
-                User_pass: passWord
-            }
+        <br>
+        <span class="error-message" id="userError">Login fehlgeschlagen</span>
+        <br>
+    </div>
+</body>
+<script>
+    function login_click() {
+        var userName = document.getElementById("userName").value;
+        var passWord = document.getElementById("passWord").value;
+        var loginError = document.getElementById("userError");
+        if(tbEmpty(userName,passWord)){
+            return;
+        }
+        var data ={
+            UserName: userName,
+            User_pass: passWord
+        }
+        var url = `api/user?UserName=${encodeURIComponent(userName)}&User_pass=${encodeURIComponent(passWord)}`;
 
-            var url = `api/user?UserName=${encodeURIComponent(userName)}&User_pass=${encodeURIComponent(passWord)}`;
-
-            fetch(url, {
-                method: "GET",
-                headers: {
+        fetch(url, {
+            method: "GET",
+            headers: {
                 "Content-Type": "application/json"
             }
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert("Benutzer wurde gefunden");
-                    window.location.href = "/index";
-                } else {
-                    alert("Fehler beim Suchen");
-                }
-            })
-            .catch(error => {
-                alert("Fehler entdeckt: " + error);
-            });
+        })
+        .then(response => {
+            if (response.ok) {
+                //alert("Benutzer wurde gefunden");
+                loginError.style.display ="none";
+                window.location.href = "/index";
+            } else {
+                loginError.style.display = "block";
+            }
+        })
+        .catch(error => {
+            loginError.style.display = "block";
+            //alert("Fehler entdeckt: " + error);
+        });
+    }
+    function tbEmpty(userName, passWord){
+        var returnVal =false;
+        if (userName == "") {
+            document.getElementById("userNameError").style.display = "block";
+            returnVal = true;
+        } else {
+            document.getElementById("userNameError").style.display = "none";
         }
 
-        function reg_click(){
-            userName = document.getElementById("userName").value;
-            passWord = document.getElementById("passWord").value;
-            if(userName == "" || passWord == ""){
-                alert("Die Textfelder dürfen nicht Leer sein");
-                return;
-            }
-            var data ={
-                UserName: userName,
-                User_pass: passWord
-            }
-            fetch("api/user",{
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response =>{
-                if(response.ok){
-                    alert("User wurde Hinzugefügt");
-                }
-                else{
-                    alert("Fehler beim Hinzufügen");
-                }
-            })
-            .catch(error => {
-                alert("Fehler entdeckt");
-            });
+        if (passWord == "") {
+            document.getElementById("passWordError").style.display = "block";
+            returnVal =true;
+        } else {
+            document.getElementById("passWordError").style.display = "none";
         }
-    </script>
+        return returnVal;
+    }
+
+    function reg_click(){
+        var userName = document.getElementById("userName").value;
+        var passWord = document.getElementById("passWord").value;
+        if(tbEmpty(userName,passWord)){
+            return;
+        }
+        var data ={
+            UserName: userName,
+            User_pass: passWord
+        }
+        fetch("api/user",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response =>{
+            if(response.ok){
+               // alert("User wurde hinzugefügt");
+            }
+            else{
+               // alert("Fehler beim Hinzufügen");
+            }
+        })
+        .catch(error => {
+            //alert("Fehler entdeckt");
+        });
+    }
+</script>
 </html>

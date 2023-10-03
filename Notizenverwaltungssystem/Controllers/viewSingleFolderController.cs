@@ -12,7 +12,7 @@ namespace Notizenverwaltungssystem.Controllers{
             string html = "";
             try{
                 if (Settings.ActiveUserName == "" || Settings.ActiveUserName == null){
-                    html = System.IO.File.ReadAllText("web/login");
+                    html = System.IO.File.ReadAllText("web/login.html");
                 }
                 else{
                     html = System.IO.File.ReadAllText("web/viewSingleFolder.html");
@@ -29,11 +29,9 @@ namespace Notizenverwaltungssystem.Controllers{
         public IActionResult GetByID(int id){
             string html = "";
             connection_class conn;
-            try
-            {
-                if (Settings.ActiveUserName == "" || Settings.ActiveUserName == null)
-                {
-                    html = System.IO.File.ReadAllText("web/login");
+            try{
+                if (Settings.ActiveUserName == "" || Settings.ActiveUserName == null){
+                    html = System.IO.File.ReadAllText("web/login.html");
                 }
                 else
                 {

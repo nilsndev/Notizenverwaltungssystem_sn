@@ -1,6 +1,6 @@
 
         loadPage('../../header','header')
-        //loadPage('../../footer','footer')
+        loadPage('../../footer','footer')
         function loadPage(pageName,controlName){
             var xhr = new XMLHttpRequest();
             xhr.open('GET',pageName, true);

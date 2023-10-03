@@ -11,7 +11,7 @@ namespace Notizenverwaltungssystem.Controllers{
             try{
             
             if (Settings.ActiveUserName == "" || Settings.ActiveUserName == null){
-                html = System.IO.File.ReadAllText("web/login");
+                html = System.IO.File.ReadAllText("web/login.html");
             }
             else{
                 html = System.IO.File.ReadAllText("web/viewSingleNote.html");

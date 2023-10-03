@@ -11,7 +11,7 @@
     <div id="header"></div>
     <br>
     <div class="container mt-5">
-        <h1 class="display-4">View One Note</h1>
+        <h1 class="display-4">Note</h1>
         <input id="id_value" class="form-control" type="hidden" readonly value="@id">
         
         <input id="fold_id_value" class="form-control" type="hidden" readonly value="@foldID">
@@ -24,7 +24,7 @@
             <textarea id="note_text_value" class="form-control" rows="5">@noteText</textarea>
         </div>
         <button class="btn btn-primary" onclick="saveChanges()">Save</button>
-        <a class="btn btn-secondary"  onclick="backToFoldButton()">Zurück zu Home</a>
+        <a class="btn btn-secondary"  onclick="backToFoldButton()">Zurück</a>
     </div>
     <br>
     <div id="footer"></div>
@@ -38,7 +38,7 @@
             var id_div = document.getElementById("id_value").value;
             var title = document.getElementById("title_value").value;
             var noteText = document.getElementById("note_text_value").value;
-            console.log("Notetex " +noteText);
+           // console.log("Notetex " +noteText);
             var data = {
                     id: id_div, 
                     userName: "",
@@ -54,15 +54,15 @@
             })
             .then(response =>{
                 if(response.ok){
-                    alert("Notiz wurde bearbeitet");
+                    //alert("Notiz wurde bearbeitet");
                     backToFoldButton();
                 }
                 else{
-                    alert("Notiz konnte nicht bearbeitet werden ");
+                    //alert("Notiz konnte nicht bearbeitet werden ");
                 }
             })
             .catch(error =>{
-                alert("Es wurde ein Fehler abgefangen " + error);
+                //alert("Es wurde ein Fehler abgefangen " + error);
             });
 
         }
