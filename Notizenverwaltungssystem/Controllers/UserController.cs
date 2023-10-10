@@ -4,22 +4,39 @@ using Notizenverwaltungssystem.Models;
 using MySql.Data.MySqlClient;
 using Notizenverwaltungssystem.otherClasses;
 using Notizenverwaltungssystem.Repositories;
+using Notizenverwaltungssystem.interfaces;
 
 namespace Notizenverwaltungssystem.Controllers{
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase {
+        private readonly IEmailSender _emailSender;
+        public UserController(IEmailSender emailSender){
+            _emailSender = emailSender;
+        }
         [HttpPost]
         public IActionResult Post(User user){
             try{
-
-            
-            bool success = UserRepository.addUser(user);
-            if (success){
+                if(user.OTP == Settings.ActiveOTP){ 
+                    bool success = UserRepository.addUser(user);
+                    if (success){
+                        return Ok();
+                    }
+                }
+            }
+            catch(Exception ex){
+                Console.WriteLine("Fehler Nachricht: " +ex.Message);
+            }
+            return BadRequest();
+        }
+        [HttpPost("SendMail")]
+        public IActionResult SendMail(User user){
+            try{
+                UserRepository.sendMail(user.Email);
                 return Ok();
             }
-            }catch(Exception ex){
-                Console.WriteLine("Fehler Nachricht: " +ex.Message);
+            catch (Exception ex){
+                Console.WriteLine("Fehler Nachricht: " + ex.Message);
             }
             return BadRequest();
         }

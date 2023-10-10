@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Notizenverwaltungssystem.Models{
     public class User{
@@ -11,10 +12,16 @@ namespace Notizenverwaltungssystem.Models{
         #region Fields
         [Required] string _userName;
         [Required] string _user_pass;
+        int _otp;
+        string _email;
         #endregion
         #region Characteristics
         public string UserName { get { return _userName; } set { _userName = value; } }
         public string User_pass { get { return _user_pass; } set { _user_pass = value; } }
+        [JsonPropertyName("mail")]
+        public string Email { get {return _email;} set { _email = value; } }
+        [JsonPropertyName("otp")]
+        public  int OTP { get { return _otp; } set { _otp = value; } }
         #endregion
         #region Methods
         #endregion

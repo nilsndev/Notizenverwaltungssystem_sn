@@ -4,6 +4,7 @@ using Notizenverwaltungssystem.Models;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Collections;
+using Org.BouncyCastle.Asn1.BC;
 
 namespace Notizenverwaltungssystem.Repositories{
     public static class UserRepository{
@@ -44,10 +45,24 @@ namespace Notizenverwaltungssystem.Repositories{
                            "VALUES(@userName,@userPass,@salt)";
             int rowsAffected = conn_instance.executeQueryWithParams(query,hashTable);
             if(rowsAffected > 0){
+                Settings.ActiveUserName = user.UserName;
                 return true;
             }
             return false;
 
+        }
+        public static async void sendMail(string mail){
+            EmailSender sender = new EmailSender();
+            int otp = generateOTP();
+            await sender.SendEmailAsync(mail,
+                                        "Authentication Code",
+                                        otp.ToString());
+            Settings.ActiveOTP = otp;
+        }
+        public static int generateOTP(){
+            Random rand = new Random();
+            int otp = rand.Next(1000, 9000);
+            return otp;
         }
         #endregion
 

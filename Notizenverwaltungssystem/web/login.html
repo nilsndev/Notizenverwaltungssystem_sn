@@ -26,7 +26,7 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"],input[type="email"] {
             text-align: left;
             width: 90%;
             padding: 10px;
@@ -64,37 +64,136 @@
 </head>
 <body>
     <h1>Login / Registrieren</h1>
-    <div class="container">
+    <div class="container" id="loginForm">
         <b>Benutzername:</b>
         <br>
-        <input id="userName" type="text" required>
-        <span class="error-message" id="userNameError">Benutzername darf nicht leer sein.</span>
+        <input id="userName_log" type="text" required>
+        <span class="error-message" id="userNameError_log">Benutzername darf nicht leer sein.</span>
         <br>
         <b>Passwort:</b>
         <br>
-        <input id="passWord" type="password" required>
-        <span class="error-message" id="passWordError">Passwort darf nicht leer sein.</span>
+        <input id="passWord_log" type="password" required>
+        <span class="error-message" id="passWordError_log">Passwort darf nicht leer sein.</span>
         <br>
         <br>
-        <input type="button" id="login_button" value="Einloggen" onclick="login_click()">
+        <input type="button" class="login_button" value="Einloggen" onclick="login_click()">
         
-        <input type="button" id="reg_button" value="Registrieren" onclick="reg_click()">
+        <input type="button" class="reg_button" value="Registrieren" onclick="showRegForm()">
         <br>
-        <span class="error-message" id="userError">Login fehlgeschlagen</span>
+        <span class="error-message" id="userError_log">Login fehlgeschlagen</span>
+        <br>
+    </div>
+    <div class="container" id="regForm" style="display: none;">
+        <b>Benutzername:</b>
+        <br>
+        <input id="userName_reg" type="text" required>
+        <span class="error-message" id="userNameError_reg">Benutzername darf nicht leer sein.</span>
+        <br>
+        <b>E-Mail:</b>
+        <br>
+        <input id="eMail_reg" type="email" required>
+        <span class="error-message" id="mailError_reg">E-Mail darf nicht leer sein.</span>
+        <br>
+        <b>Passwort:</b>
+        <br>
+        <input id="passWord_reg" type="password">
+        <span class="error-message" id="passWordError_reg">Passwort darf nicht leer sein.</span>
+        <br>
+        <br>
+        <input type="button" class="login_button" value="Einloggen" onclick="showLoginForm()">
+        <input type="button" class="reg_button" value="Registrieren" onclick="sendOTP()">
+        <br>
+        <span class="error-message" id="userError_reg">Registrierung fehlgeschlagen</span>
+        <br>
+    </div>
+    
+    <div class="container" id="authenticationForm" style="display: none;">
+        <br>
+        <b>OTP Code</b>
+        <br>
+        <input id="userOTP" type="text">
+        <br>
+        <span class="error-message" id="userError_otp">OTP-Code ist ungültig oder stimmt nicht überein.</span>
+        <br>
+        <input type="button" id="reg_submit" value="Bestätigen" onclick="reg_click()">
+        <input type="button" id="backToReg" value="Zurück" onclick="showRegForm()">
         <br>
     </div>
 </body>
 <script>
+    var regForm = document.getElementById("regForm");
+    var loginForm = document.getElementById("loginForm");
+    var authForm = document.getElementById("authenticationForm");
+    function showLoginForm(){
+        regForm.style.display = "none";
+        authForm.style.display = "none"
+        loginForm.style.display = "block";
+        hideAllErrorMessages();
+    }
+    function showRegForm(){
+        regForm.style.display = "block";
+        authForm.style.display = "none"
+        loginForm.style.display = "none";
+        hideAllErrorMessages();
+    }
+    function showAuthForm(){
+        regForm.style.display = "none";
+        authForm.style.display = "block"
+        loginForm.style.display = "none";
+    }
+    function hideAllErrorMessages() {
+    var errorMessages = document.getElementsByClassName("error-message");
+    for (var i = 0; i < errorMessages.length; i++) {
+        errorMessages[i].style.display = "none";
+    }
+}
+    function sendOTP(){
+        var userOTP = document.getElementById("userOTP");
+        var mailTB = document.getElementById("eMail_reg").value;
+        var userName = document.getElementById("userName_reg").value;
+        var passWord = document.getElementById("passWord_reg").value;
+        if(oneTBEmpty(mailTB) | tbEmpty(userName,passWord,"reg")){
+            return;
+        }
+        var data ={
+            UserName: "",
+            User_pass: "",
+            mail: mailTB,
+            otp: 0
+        }
+        fetch("api/user/SendMail",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response =>{
+            if(response.ok){
+                showAuthForm();
+               // alert("OTP gesendet");
+            }
+            else{
+               // alert("Fehler beim senden");
+            }
+        })
+        .catch(error => {
+            //alert("Fehler entdeckt");
+        });
+
+    }
     function login_click() {
-        var userName = document.getElementById("userName").value;
-        var passWord = document.getElementById("passWord").value;
-        var loginError = document.getElementById("userError");
-        if(tbEmpty(userName,passWord)){
+        var userName = document.getElementById("userName_log").value;
+        var passWord = document.getElementById("passWord_log").value;
+        var loginError = document.getElementById("userError_log");
+        if(tbEmpty(userName,passWord,"log")){
             return;
         }
         var data ={
             UserName: userName,
-            User_pass: passWord
+            User_pass: passWord,
+            mail: "",
+            otp: 0
         }
         var url = `api/user?UserName=${encodeURIComponent(userName)}&User_pass=${encodeURIComponent(passWord)}`;
 
@@ -118,33 +217,46 @@
             //alert("Fehler entdeckt: " + error);
         });
     }
-    function tbEmpty(userName, passWord){
+    function oneTBEmpty(txt_val){
+        var mailErr = document.getElementById("mailError_reg")
         var returnVal =false;
-        if (userName == "") {
-            document.getElementById("userNameError").style.display = "block";
+        if(txt_val == ""){
+            mailErr.style.display = "block";
             returnVal = true;
-        } else {
-            document.getElementById("userNameError").style.display = "none";
-        }
-
-        if (passWord == "") {
-            document.getElementById("passWordError").style.display = "block";
-            returnVal =true;
-        } else {
-            document.getElementById("passWordError").style.display = "none";
         }
         return returnVal;
     }
+    function tbEmpty(userName, passWord,logOrReg){
+    var returnVal = false;
+    if (userName == "") {
+        document.getElementById("userNameError_"+logOrReg).style.display = "block";
+        returnVal = true;
+    } else {
+        document.getElementById("userNameError_"+logOrReg).style.display = "none";
+    }
+
+    if (passWord == "") {
+        document.getElementById("passWordError_"+logOrReg).style.display = "block";
+        returnVal = true;
+    } else {
+        document.getElementById("passWordError_"+logOrReg).style.display = "none";
+    }
+    return returnVal;
+}
+
 
     function reg_click(){
-        var userName = document.getElementById("userName").value;
-        var passWord = document.getElementById("passWord").value;
-        if(tbEmpty(userName,passWord)){
+        var userName = document.getElementById("userName_reg").value;
+        var passWord = document.getElementById("passWord_reg").value;
+        var otp_val = document.getElementById("userOTP").value;
+        if(tbEmpty(userName,passWord,"reg")){
             return;
         }
         var data ={
             UserName: userName,
-            User_pass: passWord
+            User_pass: passWord,
+            mail : "",
+            otp: otp_val
         }
         fetch("api/user",{
             method: "POST",
@@ -156,9 +268,11 @@
         .then(response =>{
             if(response.ok){
                // alert("User wurde hinzugefügt");
+               window.location.href = "/index";
             }
             else{
-               // alert("Fehler beim Hinzufügen");
+                var otpErr = document.getElementById("userError_otp");
+                otpErr.style.display = "block";
             }
         })
         .catch(error => {
