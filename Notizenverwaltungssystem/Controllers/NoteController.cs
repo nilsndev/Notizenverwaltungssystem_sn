@@ -11,7 +11,7 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpGet]
         public  IActionResult Get(){
             try{
-            Note[] notes = NoteRepository.getNotesbyUserName();
+            Note[] notes = NoteRepository.GetNotesByUserName();
             Console.WriteLine(notes[0].ID);
                 return Ok(notes);
             }
@@ -23,7 +23,7 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpGet("GetNotesByFolderID")]
         public IActionResult GetNotesByFolderID(int folId){
             try{
-                Note[] notes = NoteRepository.getNotesbyUserNameFolderID(folId);
+                Note[] notes = NoteRepository.GetNotesByUserNameFolderID(folId);
                 return Ok(notes);
             }
             catch (Exception ex){
@@ -35,10 +35,11 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpPost]
         public IActionResult Post(Note note){
             try{
-            bool success = NoteRepository.addOneNote(note);
-            if (success){
-                return Ok();
-            }
+                note = Encoding.EncodeObject(note);
+                bool success = NoteRepository.addOneNote(note);
+                if (success){
+                    return Ok();
+                }
             }catch (Exception ex){
                 Console.WriteLine(ex.Message);
             }
@@ -47,7 +48,7 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpDelete("{id}")] 
         public IActionResult Delete(int id){
             try{
-            bool success = NoteRepository.deleteOneNote(id);
+            bool success = NoteRepository.DeleteOneNote(id);
             if (success){
                 return Ok();
             }
@@ -59,8 +60,8 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpPut]
         public IActionResult Put(Note updatedNote){
             try{
-            
-            bool success = NoteRepository.updateOne(updatedNote);
+            updatedNote = Encoding.EncodeObject(updatedNote);
+            bool success = NoteRepository.UpdateOne(updatedNote);
             if (success){
                 return Ok();
             }

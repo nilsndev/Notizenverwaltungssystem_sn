@@ -6,7 +6,7 @@ namespace Notizenverwaltungssystem.otherClasses{
     public class EmailSender : IEmailSender{
         #region Fields
         string _yourEMail = "notemanagementsystem@gmail.com";
-        string _EMailPW = "";   
+        string _EMailPW = "vcol vyyr byip ovyr";   
         #endregion
         #region Methods
         public Task SendEmailAsync(string email, string subject, string message){

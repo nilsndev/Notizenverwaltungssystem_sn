@@ -1,6 +1,7 @@
 using Notizenverwaltungssystem.interfaces;
 using Notizenverwaltungssystem.otherClasses;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<IEmailSender,EmailSender>();

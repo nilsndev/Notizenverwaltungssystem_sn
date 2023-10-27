@@ -55,8 +55,32 @@ namespace Notizenverwaltungssystem.otherClasses
             reader.Close();
             return success;
         }
+        public bool executeSELECTQueryWParams(string query,Hashtable hashTable){
+            MySqlCommand cmd = new MySqlCommand(query, getConnection());
+            foreach (DictionaryEntry hash in hashTable){
+                cmd.Parameters.AddWithValue(hash.Key.ToString(), hash.Value);
+            }
+            DbDataReader reader = cmd.ExecuteReader();
+            bool success = reader.HasRows;
+            reader.Close();
+            return success;
+        }
         public T[] ReturnValuesFromQuery<T>(string query, Func<MySqlDataReader, T> mapFunction){
             MySqlCommand cmd = new MySqlCommand(query, getConnection());
+            List<T> results = new List<T>();
+            using (MySqlDataReader reader = cmd.ExecuteReader()){
+                while (reader.Read()){
+                    T item = mapFunction(reader);
+                    results.Add(item);
+                }
+            }
+            return results.ToArray();
+        }
+        public T[] ReturnValuesFromParameterizedQuery<T>(string query, Dictionary<string, object> parameters, Func<MySqlDataReader, T> mapFunction){
+            MySqlCommand cmd = new MySqlCommand(query, getConnection());
+            foreach (var parameter in parameters){
+                cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+            }
             List<T> results = new List<T>();
             using (MySqlDataReader reader = cmd.ExecuteReader()){
                 while (reader.Read()){
@@ -71,6 +95,15 @@ namespace Notizenverwaltungssystem.otherClasses
             MySqlCommand cmd = new MySqlCommand(query,getConnection());
             returnValue = (T)cmd.ExecuteScalar();
             return returnValue; 
+        }
+        public T executeWithReturnValueParams<T>(string query,Hashtable hashTable){
+            T returnValue;
+            MySqlCommand cmd = new MySqlCommand(query, getConnection());
+            foreach (DictionaryEntry hash in hashTable){
+                cmd.Parameters.AddWithValue(hash.Key.ToString(), hash.Value);
+            }
+            returnValue = (T)cmd.ExecuteScalar();
+            return returnValue;
         }
         public int executeQuery(string query){
             MySqlCommand cmd = new MySqlCommand(query,getConnection());

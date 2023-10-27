@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Notizenverwaltungssystem.otherClasses;
-
 namespace Notizenverwaltungssystem.Controllers{
     [Route("[controller]")]
     [ApiController]
@@ -9,7 +8,6 @@ namespace Notizenverwaltungssystem.Controllers{
         public IActionResult Get(int id,string title,string? note_text, int? foldID){
             string html = "";
             try{
-            
             if (Settings.ActiveUserName == "" || Settings.ActiveUserName == null){
                 html = System.IO.File.ReadAllText("web/login.html");
             }

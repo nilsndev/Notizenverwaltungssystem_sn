@@ -9,48 +9,62 @@ using Org.BouncyCastle.Asn1.BC;
 namespace Notizenverwaltungssystem.Repositories{
     public static class UserRepository{
         #region Methods
-        public static bool getOneUser(User user){
+        public static bool GetOneUser(User user){
             connection_class conn_instance = connection_class.getInstance();
-            string salt = getSalt(user,conn_instance);
-            string pwHash = getHashPW(user,conn_instance);
-            string query = $"SELECT * FROM user WHERE userName = '{user.UserName}' AND passwordHash = '{pwHash}'";
+            string salt = GetSalt(user, conn_instance);
+            string pwHash = GetHashPW(user, conn_instance);
+            string query = "SELECT * FROM user WHERE userName = @userName AND passwordHash = @pwHash";
+            var parameters = new Hashtable{
+                { "@userName", user.UserName },
+                { "@pwHash", pwHash }
+            };
             bool pwCorrect = Hashing.VertifyPassword(user.User_pass, pwHash, salt);
-            bool success = conn_instance.executeSELECTQuery(query);
-            if (success && pwCorrect){
+            bool success = conn_instance.executeSELECTQueryWParams(query, parameters);
+
+            if (success && pwCorrect)
+            {
                 Settings.ActiveUserName = user.UserName;
             }
+
             return success;
         }
-        public static string getSalt(User user, connection_class conn_instance){
-            string query = $"SELECT salt FROM user WHERE userName = '{user.UserName}'";
-            string salt = conn_instance.executeWithReturnValue<string>(query);
+
+        public static string GetSalt(User user, connection_class conn_instance){
+            string query = "SELECT salt FROM user WHERE userName = @userName";
+            var parameters = new Hashtable{
+                { "@userName", user.UserName }
+            };
+            string salt = conn_instance.executeWithReturnValueParams<string>(query, parameters);
             return salt;
         }
-        public static string getHashPW(User user, connection_class conn_instance){
-            string query = $"SELECT passwordHash FROM user WHERE userName = '{user.UserName}'";
-            string pwHash = conn_instance.executeWithReturnValue<string>(query);
+
+        public static string GetHashPW(User user, connection_class conn_instance){
+            string query = "SELECT passwordHash FROM user WHERE userName = @userName";
+            var parameters = new Hashtable{
+                { "@userName", user.UserName }
+            };
+            string pwHash = conn_instance.executeWithReturnValueParams<string>(query, parameters);
             return pwHash;
         }
-        public static bool addUser(User user){
+        public static bool AddUser(User user){
             connection_class conn_instance = connection_class.getInstance();
             MySqlCommand cmd = new MySqlCommand();
-            Hashtable hashTable = new Hashtable();
-            hashTable.Add("@userName", user.UserName);
+            var parameters = new Hashtable();
+            parameters.Add("@userName", user.UserName);
             string hashedPW = Hashing.HashPassword(user.User_pass);
             string salt = Hashing.Salt;
-            hashTable.Add("@userPass", hashedPW);
-            hashTable.Add("@salt", salt);
-            
-            string query = "INSERT INTO user(userName,passwordHash,salt) " +
-                           "VALUES(@userName,@userPass,@salt)";
-            int rowsAffected = conn_instance.executeQueryWithParams(query,hashTable);
-            if(rowsAffected > 0){
+            parameters.Add("@userPass", hashedPW);
+            parameters.Add("@salt", salt);
+            string query = "INSERT INTO user(userName, passwordHash, salt) " +
+                           "VALUES(@userName, @userPass, @salt)";
+            int rowsAffected = conn_instance.executeQueryWithParams(query, parameters);
+            if (rowsAffected > 0){
                 Settings.ActiveUserName = user.UserName;
                 return true;
             }
             return false;
-
         }
+
         public static async void sendMail(string mail){
             EmailSender sender = new EmailSender();
             int otp = generateOTP();

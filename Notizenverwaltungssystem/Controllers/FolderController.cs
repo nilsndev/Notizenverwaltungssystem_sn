@@ -51,6 +51,7 @@ namespace Notizenverwaltungssystem.Controllers{
         }
         [HttpPost]
         public IActionResult Post(Folder folder){
+            folder = Encoding.EncodeObject(folder);
             bool success =FolderRepository.AddFolder(folder);
             if (success){
                 return Ok();
@@ -61,6 +62,7 @@ namespace Notizenverwaltungssystem.Controllers{
         }
         [HttpPut]
         public IActionResult Put(Folder folder){
+            folder = Encoding.EncodeObject(folder);
             Console.WriteLine(folder.FolderName);
             bool success = FolderRepository.updateOne(folder);
             if (success){

@@ -5,6 +5,7 @@ using MySql.Data.MySqlClient;
 using Notizenverwaltungssystem.otherClasses;
 using Notizenverwaltungssystem.Repositories;
 using Notizenverwaltungssystem.interfaces;
+using System.Text.Encodings.Web;
 
 namespace Notizenverwaltungssystem.Controllers{
     [Route("api/[controller]")]
@@ -18,7 +19,7 @@ namespace Notizenverwaltungssystem.Controllers{
         public IActionResult Post(User user){
             try{
                 if(user.OTP == Settings.ActiveOTP){ 
-                    bool success = UserRepository.addUser(user);
+                    bool success = UserRepository.AddUser(user);
                     if (success){
                         return Ok();
                     }
@@ -43,7 +44,8 @@ namespace Notizenverwaltungssystem.Controllers{
         [HttpGet]
         public IActionResult Get(string UserName, string User_pass){
             try{
-            bool success = UserRepository.getOneUser(new User(UserName,User_pass));
+
+            bool success = UserRepository.GetOneUser(new User(UserName,User_pass));
             if (success){
                 return Ok();
             }

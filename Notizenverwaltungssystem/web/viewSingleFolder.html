@@ -113,10 +113,13 @@
 <script src="/LoadHeadXFood"></script> 
 <script>
     var contentIsLoaded = false;
-    document.addEventListener("DOMContentLoaded", async function () {
-    // Ihre JavaScript-Funktionen hier ausführen
-    await loadData();
+    window.addEventListener("load", function () {
+    location.reload();
+    return;
 });
+    document.addEventListener("DOMContentLoaded", async function () {
+        await loadData();
+    });
     async function loadData(){
         if(!contentIsLoaded){
             contentIsLoaded =true;
@@ -135,7 +138,6 @@
             throw new Error("Fetch-Anfrage war nicht erfolgreich");
         }*/
         const folders = await response.json();
-        console.log(folders);
         folders.forEach(folder => {
             var li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
@@ -171,7 +173,7 @@
 }
 
 async function loadNotes() {
-    var folderItems = document.getElementById("folderItems");
+    const folderItems = document.getElementById("folderItems");
     var folID = document.getElementById("folderID").innerHTML;
     var url = `api/note/GetNotesByFolderID?folId=${encodeURIComponent(folID)}`;
     try {
@@ -204,6 +206,9 @@ async function loadNotes() {
         //console.error("Es wurde ein Fehler abgefangen: ", error);
     }
 }
+window.addEventListener('unload', () => {
+    location.reload();
+});
 function removeFolderItem(id){
     var url = `/api/folder/${encodeURIComponent(id)}`;
             fetch(url, {
@@ -227,7 +232,6 @@ function removeFolderItem(id){
 
    
     function removeNoteItem(id){
-            //console.log(id);
             var url = `/api/note/${encodeURIComponent(id)}`;
             fetch(url, {
                 method: "DELETE",
@@ -338,6 +342,7 @@ function removeFolderItem(id){
                 //alert("Es wurde ein Fehler abgefangen " + error);
             });
     }
+    
     function openEditForm(id, folderName) {
             event.stopPropagation();
             var editForm = document.getElementById("editForm");
