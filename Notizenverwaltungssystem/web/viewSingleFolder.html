@@ -113,10 +113,10 @@
 <script src="/LoadHeadXFood"></script> 
 <script>
     var contentIsLoaded = false;
-    window.addEventListener("load", function () {
-    location.reload();
-    return;
-});
+    if (performance.navigation.type === 2) {
+        location.reload();
+    }
+
     document.addEventListener("DOMContentLoaded", async function () {
         await loadData();
     });
@@ -142,7 +142,7 @@
             var li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.style.cursor = "pointer";
-            li.addEventListener('click', () => {
+            li.addEventListener('click', async () => {
                 window.location.href ="/viewSingleFolder?id="+folder.id+"&folderName=" + encodeURIComponent(folder.folderName);
             });
             var buttonGroup = document.createElement("div");
@@ -189,6 +189,7 @@ async function loadNotes() {
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.addEventListener('click', () => {
                 window.location.href = "/viewSingleNote?id=" + note.id + "&title=" + encodeURIComponent(note.title) + "&note_text=" + encodeURIComponent(note.note_text) + "&foldID=" + encodeURIComponent(folID);
+            
             });
             var noteInfo = document.createElement("div");
             noteInfo.innerHTML = note.title;
